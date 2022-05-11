@@ -1,0 +1,1 @@
+gcc -Ofast -march=native -flto *.c  -o  trainer
