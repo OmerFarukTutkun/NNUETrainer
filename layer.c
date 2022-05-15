@@ -15,16 +15,15 @@ void calculateWeightGradients(Matrix* weights_gradients, Matrix* input, Matrix* 
 void calculateWeightGradientsSparse(Matrix* weights_gradients, Matrix* input, Matrix* output_gradients)
 {
     transposeMatrix(output_gradients);
-    Matrix* addition = createMatrix(1, weights_gradients->columns, 0.0f);
-    _aligned_free(addition->data);
+    Matrix addition;
+    addition.rows = 1;
+    addition.columns = weights_gradients->columns;
     for(int i=0; i< input->columns* input->rows; i++)
     {
-        addition->data = &weights_gradients->data[ (int)input->data[i] * weights_gradients->columns];
-        addMatrix(addition, output_gradients, addition);
+        addition.data = &weights_gradients->data[ (int)input->data[i] * weights_gradients->columns];
+        addMatrix(&addition, output_gradients, &addition);
     }
-    addition->data = NULL;
     transposeMatrix(output_gradients);
-    freeMatrix(&addition);
 }
 void forwardLinearLayer(LinearLayer* layer)
 {

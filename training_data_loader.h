@@ -7,6 +7,7 @@
 #include <math.h>
 #include <assert.h>
 #include <time.h>
+#include "activation.h"
 #define PAWN 1
 #define KNIGHT 3
 #define BISHOP 5
@@ -88,7 +89,7 @@ uint8_t read_position(uint8_t* data)
     b_king = Mirror(b_king);
     uint16_t t = ((uint16_t)data[33] )<<8 | (uint16_t)data[32];
     int16_t x =  (int16_t)t;
-    score = 1.0/ ( 1.0 +exp(- (x )/scale));
+    score = fast_sigmoid(x/scale);
     for(int i=0; i<num; i++)
     {   
         weight_indices[0][i] = pieces[0][i];

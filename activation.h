@@ -7,6 +7,9 @@ typedef struct Activation
     void (*backprop)(Matrix*, Matrix*, Matrix*);
 }Activation;
 
+float fast_sigmoid(float x);
+
+
 //activation functions
 void relu(Matrix* unactivated, Matrix* activated);
 void sigmoid(Matrix* unactivated, Matrix* activated);

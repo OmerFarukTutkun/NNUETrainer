@@ -53,15 +53,14 @@ void sumMatrixRows(Matrix* row_indices, Matrix* matrix, Matrix* output)
     assert(checkMemory(matrix));
     assert(checkMemory(output));
     assert(matrix->columns == output->columns && output->rows == 1);
-    Matrix* addition = createMatrix(1, matrix->columns , 0.0f);
-    _aligned_free(addition->data);
+    Matrix addition;
+    addition.rows = 1;
+    addition.columns = matrix->columns;
     for(int i=0; i< row_indices->rows * row_indices->columns ; i++)
     {   
-        addition->data = &matrix->data[ (int)row_indices->data[i] * matrix->columns];
-        addMatrix(addition, output,output);
+        addition.data = &matrix->data[ (int)row_indices->data[i] * matrix->columns];
+        addMatrix(&addition, output,output);
     }
-    addition->data = NULL;
-    freeMatrix(&addition);
 }
 void MultipyMatrix_abT(Matrix* a, Matrix* b, Matrix* c) // C = A * B^T 
 {
