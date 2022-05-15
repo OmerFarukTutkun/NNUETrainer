@@ -10,7 +10,7 @@
 #define EPOCH_SIZE 100000000
 #define TRANINNG_FILE "D:\\Desktop\\SATRANC\\Stockfish\\farseer_shuffled.bin"
 #define BATCH_SIZE 16384
-#define LR 0.001
+#define LR 0.002
 
 int main()
 {
@@ -22,6 +22,8 @@ int main()
     initAdam(&optimizer,&model,LR, BATCH_SIZE);
 
     Matrix* input1 = createMatrix(32, 1,0.0);  
+    Matrix* input2 = createMatrix(32, 1,0.0);  
+    model.layers[1].input = input2;
     model.layers[0].input = input1;
 
     float prediction,loss,total_loss=0.0,metric=0.0;
@@ -64,17 +66,17 @@ int main()
                 for(int j=0 ; j<num; j++)
                 {
                     input1->data[j] = 0.001 + (float)weight_indices[side][j]; 
+                    input2->data[j] = 0.001 + (float)weight_indices[!side][j]; 
                 }
-
+                input2->rows= num;
                 input1->rows= num;
-                model.bucket =(num-1)/(32/num_of_buckets);
                 model.forward(&model);
 
-                prediction = model.layers[model.bucket*3 + 3].activated_output->data[0];
+                prediction = model.layers[model.num_of_layers -1].activated_output->data[0];
                 total_loss +=  model.loss.apply(prediction, score);
                 metric += mae(prediction,score);
 
-                model.layers[model.bucket*3 + 3].output_gradients->data[0] = model.loss.gradient(prediction, score);
+                model.layers[model.num_of_layers -1].output_gradients->data[0] = model.loss.gradient(prediction, score);
                 model.backward(&model);
 
                 if(e % BATCH_SIZE == 0)

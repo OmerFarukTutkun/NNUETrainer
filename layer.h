@@ -19,6 +19,7 @@ typedef struct LinearLayer
     Matrix* bias_gradients;
 
     int need_input_grad;
+    int is_trainable;
 
     void (*forward) (struct LinearLayer* self);
     void (*backward) (struct LinearLayer* self);

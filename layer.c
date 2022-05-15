@@ -90,7 +90,9 @@ LinearLayer createLinearLayer(int input_size, int output_size, int need_input_gr
     layer.biases = createMatrix(output_size, 1, 0.0);
     layer.bias_gradients = createMatrix(output_size, 1, 0.0);
     randomizeMatrix(layer.weights, sqrt(2.0/(input_size)));
+
     layer.need_input_grad = need_input_grad;
+    layer.is_trainable = TRUE;
     layer.unactivated_output = createMatrix(output_size, 1, 0.0);
     layer.activated_output = createMatrix(output_size, 1, 0.0);
 

@@ -52,6 +52,8 @@ void optimizeSGD(SGD* optimizer)
 {
     for(int i=0; i<optimizer->model->num_of_layers ; i++)
     {
+        if(!optimizer->model->layers[i].is_trainable)
+            continue;
         //calculate velocity = momentum*velocity - lr*gradients
         scaleMatrix( optimizer->velocity[i].weights ,   optimizer->momentum);
         scaleMatrix(optimizer->velocity[i].biases ,     optimizer->momentum);
@@ -130,6 +132,8 @@ void  optimizeAdam(Adam* optimizer)
 {
     for(int i=0; i< optimizer->model->num_of_layers ; i++)
     {
+        if(!optimizer->model->layers[i].is_trainable)
+            continue;
         //average the gradients
         scaleMatrix( optimizer->model->layers[i].weight_gradients ,  1.0/optimizer->batch_size);
         scaleMatrix(optimizer->model->layers[i].bias_gradients ,    1.0/optimizer->batch_size);
