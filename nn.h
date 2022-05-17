@@ -5,7 +5,7 @@
 #include "layer.h"
 #include "loss.h"
 #define WEIGHT_SCALE 512.0
-int INPUT_SIZE = 768;
+int INPUT_SIZE = 768*16;
 int L1= 128;
 int L2= 8;
 int L3 =32;

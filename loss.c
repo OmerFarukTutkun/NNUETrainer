@@ -23,5 +23,5 @@ float mse2(float prediction, float target)
 }
 float gradient_mse2(float prediction, float target)
 {
-    return powf(fabs(target - prediction) , 1.6)*(target > prediction ? -2.6 : 2.6);
+    return -2.6*powf(fabs(target - prediction) , 0.6)*(target - prediction);
 }

@@ -44,6 +44,8 @@ void initSGD(SGD* optimizer,NN* model, float lr ,float batch_size, float momentu
     optimizer->nesterov = 0;
     for(int i=0; i<optimizer->model->num_of_layers ; i++)
     {
+        if(!optimizer->model->layers[i].is_trainable)
+            continue;
         optimizer->velocity[i].weights = createMatrix(optimizer->model->layers[i].weight_gradients->rows, optimizer->model->layers[i].weight_gradients->columns , 0.0f);
         optimizer->velocity[i].biases =  createMatrix(optimizer->model->layers[i].bias_gradients->rows, optimizer->model->layers[i].bias_gradients->columns , 0.0f);
     }
@@ -121,6 +123,8 @@ void initAdam(Adam* optimizer,NN* model, float lr ,float batch_size)
     optimizer->batch_size = batch_size;
     for(int i=0; i< optimizer->model->num_of_layers ; i++)
     {
+        if(!optimizer->model->layers[i].is_trainable)
+            continue;
         optimizer->moments[i].moment1_W = createMatrix(optimizer->model->layers[i].weight_gradients->rows, optimizer->model->layers[i].weight_gradients->columns , 0.0f);
         optimizer->moments[i].moment1_b =  createMatrix(optimizer->model->layers[i].bias_gradients->rows, optimizer->model->layers[i].bias_gradients->columns , 0.0f);
         optimizer->moments[i].moment2_W = createMatrix(optimizer->model->layers[i].weight_gradients->rows, optimizer->model->layers[i].weight_gradients->columns , 0.0f);
@@ -143,7 +147,6 @@ void  optimizeAdam(Adam* optimizer)
         calculate_moment1(optimizer->moments[i].moment1_b, optimizer->model->layers[i].bias_gradients);
         calculate_moment2(optimizer->moments[i].moment2_W, optimizer->model->layers[i].weight_gradients );
         calculate_moment2(optimizer->moments[i].moment2_b, optimizer->model->layers[i].bias_gradients );
-
         // update parameters
         update_parameters_Adam(optimizer->moments[i].moment1_W, optimizer->moments[i].moment2_W , optimizer->model->layers[i].weights, optimizer->lr);
         update_parameters_Adam(optimizer->moments[i].moment1_b, optimizer->moments[i].moment2_b,  optimizer->model->layers[i].biases,  optimizer->lr);

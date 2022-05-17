@@ -38,7 +38,7 @@ int main()
         return 0;
     } 
 
-    for(int epoch=1; epoch<100; epoch++)
+    for(int epoch=1; epoch <=100; epoch++)
     {
         printf("started epoch %d\n", epoch);
         for(int k=0 ; k< EPOCH_SIZE /NUMBER_OF_SAMPLE ; k++ )
@@ -62,11 +62,10 @@ int main()
                 }
                 m ++;
                 e++;
-
                 for(int j=0 ; j<num; j++)
                 {
-                    input1->data[j] = 0.001 + (float)weight_indices[side][j]; 
-                    input2->data[j] = 0.001 + (float)weight_indices[!side][j]; 
+                    input1->data[j] = 0.001 + (float)active_neurons[side][j]; 
+                    input2->data[j] = 0.001 + (float)active_neurons[!side][j]; 
                 }
                 input2->rows= num;
                 input1->rows= num;

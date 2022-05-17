@@ -23,7 +23,7 @@
 
 const float scale = 275.0;
 int pieces[2][32];      // pieces[0] for white perspective, pieces[1] for black
-int weight_indices[2][32]; 
+int active_neurons[2][64]; 
 const uint8_t nn_indices[2][10] = { {5,0,6,1,7,2,8,3,9,4} ,{0,5,1,6,2,7,3,8,4,9}};
 
 float score; // score of the position in wdl
@@ -32,10 +32,37 @@ uint8_t num =0 ;// number of pieces
 int w_king,b_king;
 uint8_t side;
 
+int king_indices[64] = {
+    0,  1,  2,  3,  -1, -1, -1, -1,
+    4,  5,  6,  7,  -1, -1, -1, -1,
+    8,  9, 10, 11,  -1, -1, -1, -1,
+    8,  9, 10, 11,  -1, -1, -1, -1,
+    12, 12, 13, 13, -1, -1, -1, -1,
+    12, 12, 13, 13, -1, -1, -1, -1,
+    14, 14, 15, 15, -1, -1, -1, -1,
+    14, 14, 15, 15, -1, -1, -1, -1,
+    };
+ 
 
-int Horizontal_Mirror(int sq)
+int HorizontalMirror(int sq)
 { 
     return((sq/8)*8 + 7-sq%8);
+}
+void HorizontalMirrorAllPieces(int side)
+{
+    for(int i=0; i<num ; i++)
+    {
+        pieces[side][i]  = HorizontalMirror( pieces[side][i] );
+    }
+}
+int handle_king(int* king )  // does mirroring for all pieces is needed or not
+{
+    if(king[0]%8 > 3)   //mirroring is needed since king is on a-d files
+    {
+        king[0] = HorizontalMirror(king[0]);
+        return 1;
+    }    
+    return 0;
 }
 int read_one_bit(uint8_t* data)
 {
@@ -57,9 +84,9 @@ uint8_t read_position(uint8_t* data)
     bit_cursor =0;
     side = read_one_bit(data);
     uint16_t move = ((uint16_t)data[35] )<<8 | (uint16_t)data[34];
-    uint8_t to = Horizontal_Mirror(move & SQ_MASK);
-    w_king= Horizontal_Mirror(read_n_bit(data,6));
-    b_king= Horizontal_Mirror(read_n_bit(data,6));
+    uint8_t to = HorizontalMirror(move & SQ_MASK);
+    w_king= HorizontalMirror(read_n_bit(data,6));
+    b_king= HorizontalMirror(read_n_bit(data,6));
     for(int i=63 ; i>=0 ; i--)
     {
         if((i == w_king) || (i== b_king))
@@ -90,10 +117,21 @@ uint8_t read_position(uint8_t* data)
     uint16_t t = ((uint16_t)data[33] )<<8 | (uint16_t)data[32];
     int16_t x =  (int16_t)t;
     score = fast_sigmoid(x/scale);
+
+    if(handle_king(&w_king))
+    {
+        HorizontalMirrorAllPieces(0);
+    }
+    if(handle_king(&b_king))
+    {
+        HorizontalMirrorAllPieces(1);
+    }
+    assert(king_indices[w_king] != -1);
+    assert(king_indices[b_king] != -1);
     for(int i=0; i<num; i++)
     {   
-        weight_indices[0][i] = pieces[0][i];
-        weight_indices[1][i] = pieces[1][i];
+        active_neurons[0][i] =king_indices[w_king]*768 +  pieces[0][i];
+        active_neurons[1][i] =king_indices[b_king]*768 +  pieces[1][i];
     }
     return num;
 }
