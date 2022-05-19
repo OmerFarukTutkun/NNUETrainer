@@ -118,20 +118,10 @@ uint8_t read_position(uint8_t* data)
     int16_t x =  (int16_t)t;
     score = fast_sigmoid(x/scale);
 
-    if(handle_king(&w_king))
-    {
-        HorizontalMirrorAllPieces(0);
-    }
-    if(handle_king(&b_king))
-    {
-        HorizontalMirrorAllPieces(1);
-    }
-    assert(king_indices[w_king] != -1);
-    assert(king_indices[b_king] != -1);
     for(int i=0; i<num; i++)
     {   
-        active_neurons[0][i] =king_indices[w_king]*768 +  pieces[0][i];
-        active_neurons[1][i] =king_indices[b_king]*768 +  pieces[1][i];
+        active_neurons[0][i] =  pieces[0][i];
+        active_neurons[1][i] =  pieces[1][i];
     }
     return num;
 }

@@ -150,6 +150,10 @@ void  optimizeAdam(Adam* optimizer)
         // update parameters
         update_parameters_Adam(optimizer->moments[i].moment1_W, optimizer->moments[i].moment2_W , optimizer->model->layers[i].weights, optimizer->lr);
         update_parameters_Adam(optimizer->moments[i].moment1_b, optimizer->moments[i].moment2_b,  optimizer->model->layers[i].biases,  optimizer->lr);
+
+        //
+        clipMatrix(optimizer->model->layers[i].weights, -1.9,1.9);
+        clipMatrix(optimizer->model->layers[i].biases,  -1.9,1.9);
     }
 }
 void freeAdam(Adam* optimizer)
